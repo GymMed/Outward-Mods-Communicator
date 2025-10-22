@@ -15,7 +15,7 @@
 	</a>
 </div>
 
-Outward Mods Communicator enables seamless communication between mods through shared events and configuration syncing. It also lets users override any changes made by other mods, giving them full control over their settings.
+Outward Mods Communicator enables seamless communication between mods through shared events and configuration syncing. It also lets users override any changes made by other mods, giving them full control over their settings. You can find library published on NuGet as `Outward.ModsCommunicator`.
 
 ### Why should I use this?
 
@@ -30,7 +30,9 @@ Configurations can be edited through XML, and the control flow follows this orde
 
 <details>
     <summary>Changing Configuration As User</summary>
-    This library includes `PlayerModsOverrides.xml` file that you can open to add or modify XML values.
+    This library includes <code>PlayerModsOverrides.example.xml</code> file. You will need
+    to change it's name to <code>PlayerModsOverrides.xml</code> when you can open it to add
+    or modify XML values.
 </details>
 
 <details>
@@ -61,7 +63,7 @@ Configurations can be edited through XML, and the control flow follows this orde
 
 <details>
     <summary>Possible mod override information can be found in `BepInEx/config` directory inside `.cfg` documents</summary>
-<pre><code>## Settings file was created by plugin Outward Game Settings v0.0.2<br>
+<pre><code>## Settings file was created by plugin Outward Game Settings v0.0.1<br>
 ## Plugin GUID: gymmed.outward_game_settings<br>
 
 [Enchanting Modifications]
@@ -100,7 +102,6 @@ Communication is handled through an Event Bus — a system that allows mods to f
     <summary>How to register event?</summary>
 <pre><code class="language-csharp">using OutwardModsCommunicator.EventBus;
 ...
-
 void Awake()
 {
     ...
@@ -108,7 +109,6 @@ void Awake()
     // "EnchantmentMenu@TryEnchant" is the event name
     // ("menu", typeof(EnchantmentMenu)) defines your variable name and its type
     EventBus.RegisterEvent(GUID,  "EnchantmentMenu@TryEnchant", ("menu", typeof(EnchantmentMenu)));
-
     // you can add multiple variables and
     // add as many as you need like this:
     //EventBus.RegisterEvent("MyPluginId",  "MyClass@MyMethod", ("name", typeof(string)), ("health", typeof(int)));
@@ -121,7 +121,6 @@ void Awake()
 Use this in places where you want to allow other mods to extend your functionality:
 <pre><code class="language-csharp">using OutwardModsCommunicator.EventBus;
 ...
-
 void YourMethod()
 {
     ...
@@ -130,7 +129,6 @@ void YourMethod()
     {
         ["EnchantmentMenu"] = menu,
     };
-
     // Send event for subscribers to receive data
     EventBus.Publish(OutwardGameSettings.GUID,  "EnchantmentMenu@TryEnchant", payload);
 }</code></pre>
@@ -141,7 +139,6 @@ void YourMethod()
 Use this when you want to listen to an event and execute additional code:
 <pre><code class="language-csharp">using OutwardModsCommunicator.EventBus;
 ...
-
 void Awake()
 {
     ...
@@ -150,33 +147,27 @@ void Awake()
     // Provide method you want to execute
     EventBus.Subscribe("gymmed.outward_game_settings", "EnchantmentMenu@TryEnchant", OnTryEnchant);
 }
-
 private static void OnTryEnchant(EventPayload payload)
 {
     if (payload == null) return;
-
     // try to retrieve passed event data
     EnchantmentMenu menu = payload.Get<EnchantmentMenu>("menu", null);
-
     // if event data is null log and stop execution
     if (menu == null)
     {
         Log.LogMessage("Mod gymmed.outward_game_settings event EnchantmentMenu@TryEnchant returned null for EnchantmentMenu");
         return;
     }
-
     // Lets log success
     Log.LogMessage($"{GUID} successfully communicated with gymmed.outward_game_settings mod and passed menu!");
 }</code></pre>
 </details>
-
 
 <details>
     <summary>How to get all registered events?</summary>
 Use this when you want to log or inspect all registered events:
 <pre><code class="language-csharp">using OutwardModsCommunicator.EventBus;
 ...
-
 // We use harmony patch to execute code after each plugin is loaded
 // and have already registered their events
 [HarmonyPatch(typeof(ResourcesPrefabManager), nameof(ResourcesPrefabManager.Load))]
