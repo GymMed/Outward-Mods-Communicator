@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>Library</OutputType>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <DebugType>portable</DebugType>
+    <OutputPath>..\Release\</OutputPath>
+	
+	  <Version>1.0.0</Version>
+	  <AssemblyVersion>1.0.0.0</AssemblyVersion>
+	  <FileVersion>1.0.0.0</FileVersion>
+	  <InformationalVersion>1.0.0</InformationalVersion>
+
+    <PackageId>OutwardModsCommunicator</PackageId>
+    <Authors>GymMed</Authors>
+    <Company>GymMed</Company>
+    <Product>Outward Mods Communicator</Product>
+    <Description>Outward Mods Communicator enables seamless communication between mods through shared events and configuration syncing. It also lets users override any changes made by other mods, giving them full control over their settings.</Description>
+
+    <PackageTags>Outward;Mods;BepInEx;Events;Communication</PackageTags>
+    <RepositoryUrl>https://github.com/GymMed/Outward-Mods-Communicator</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/GymMed/Outward-Mods-Communicator</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+
+    <Copyright>© 2025 GymMed</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.BaseLib" Version="5.4.16" PrivateAssets="all" />
+    <PackageReference Include="HarmonyX" Version="2.5.7" PrivateAssets="all" />
+    <PackageReference Include="Outward.GameLibs" Version="2022.5.18-r.0" PrivateAssets="all" />
+    <PackageReference Include="Outward.SideLoader" Version="3.7.14" PrivateAssets="all" />
+    <PackageReference Include="UnityEngine.Modules" Version="2020.3.26" PrivateAssets="all" />
+  </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="call &quot;$(ProjectDir)..\Public\placeBuild.bat&quot;" />
+    </Target>
+</Project>
