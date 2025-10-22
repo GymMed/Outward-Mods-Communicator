@@ -198,6 +198,6 @@ To manually set up, do the following
 2. Extract the archive into any directory(recommend empty).
 3. Move the contents of the plugins\ directory from the archive into the `BepInEx\plugins\OutwardModsCommunicator\` directory you created.
 4. It should look like `Outward\BepInEx\plugins\OutwardModsCommunicator\OutwardModsCommunicator.dll`
-   Launch the game, open inventory and view details of item(Equipment or weapon) it should display all available enchantments.
+   Launch the game.
 
 ### If you liked the mod leave a star on [GitHub](https://github.com/GymMed/Outward-Mods-Communicator) it's free
