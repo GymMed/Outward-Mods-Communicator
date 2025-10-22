@@ -7,11 +7,11 @@
 </div>
 
 <div align="center">
-	<a href="https://thunderstore.io/c/outward/p/GymMed/ModsCommunicator/">
-		<img src="https://img.shields.io/thunderstore/dt/GymMed/ModsCommunicator" alt="Thunderstore Downloads">
+	<a href="https://thunderstore.io/c/outward/p/GymMed/Mods_Communicator/">
+		<img src="https://img.shields.io/thunderstore/dt/GymMed/Mods_Communicator" alt="Thunderstore Downloads">
 	</a>
 	<a href="https://github.com/GymMed/Outward-Mods-Communicator/releases/latest">
-		<img src="https://img.shields.io/thunderstore/v/GymMed/ModsCommunicator" alt="Thunderstore Version">
+		<img src="https://img.shields.io/thunderstore/v/GymMed/Mods_Communicator" alt="Thunderstore Version">
 	</a>
 </div>
 
@@ -88,6 +88,7 @@ EnchantingSuccessChance = 5<br>
 \# Setting type: Boolean<br>
 \# Default value: true<br>
 PlayAudioOnEnchantingDone = true<br></code></pre>
+
 </details>
 </details>
 
@@ -186,8 +187,8 @@ The project also includes extra tools like `EventProfiler` and `EventBusDataPres
 
 ## Can I find basic example how to use this?
 
-You can view mod creation [template here](https://github.com/GymMed/Outward-Mod-Pack-Template).</br> 
-You can view [outward game settings mod here](https://github.com/GymMed/Outward-Game-Settings). 
+You can view mod creation [template here](https://github.com/GymMed/Outward-Mod-Pack-Template).</br>
+You can view [outward game settings mod here](https://github.com/GymMed/Outward-Game-Settings).
 
 ## How to set up
 

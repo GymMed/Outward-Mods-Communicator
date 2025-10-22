@@ -2,7 +2,7 @@
 	"name": "Mods_Communicator",
 	"version_number": "1.0.0",
 	"website_url": "https://github.com/GymMed/Outward-Mods-Communicator",
-	"description": "Outward Mods Communicator enables seamless communication between mods through shared events and configuration syncing. It also lets users override any changes made by other mods, giving them full control over their settings. You can find library published on NuGet as `Outward.ModsCommunicator`.",
+	"description": "Outward Mods Communicator enables seamless communication between mods through shared events and configuration syncing. It also lets users override any changes made by other mods, giving them full control over their settings.",
 	"dependencies": [
 		"sinai-dev-SideLoader-3.8.4",
 		"BepInEx-BepInExPack_Outward-5.4.19"
