@@ -11,10 +11,10 @@
     <DebugType>portable</DebugType>
     <OutputPath>..\Release\</OutputPath>
 	
-	  <Version>1.0.0</Version>
-	  <AssemblyVersion>1.0.0.0</AssemblyVersion>
-	  <FileVersion>1.0.0.0</FileVersion>
-	  <InformationalVersion>1.0.0</InformationalVersion>
+	  <Version>1.0.1</Version>
+	  <AssemblyVersion>1.0.1.0</AssemblyVersion>
+	  <FileVersion>1.0.1.0</FileVersion>
+	  <InformationalVersion>1.0.1</InformationalVersion>
 
     <PackageId>Outward.ModsCommunicator</PackageId>
     <Authors>GymMed</Authors>
@@ -31,6 +31,8 @@
 
     <Copyright>© 2025 GymMed</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
+
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -43,7 +45,7 @@
     <None Include="icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="call &quot;$(ProjectDir)..\Public\placeBuild.bat&quot;" />
+    <Target Name="PostPack" AfterTargets="Pack">
+      <Exec Command="call &quot;$(ProjectDir)..\Public\bats\buildProcesses.bat&quot;" />
     </Target>
 </Project>

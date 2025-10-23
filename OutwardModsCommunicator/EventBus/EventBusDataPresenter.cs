@@ -137,6 +137,9 @@ namespace OutwardModsCommunicator.EventBus
         /// </summary>
         public static void LogAllModsSubsribers()
         {
+            #if DEBUG
+            OMC.Log($"EventBusDataPresenter@LogAllModsSubsribers called!");
+            #endif
             var modSubscribers = EventBus.GetModSubscribers();
 
             OMC.Log("==== EventBus Data: ALL MODS ====");
@@ -155,6 +158,9 @@ namespace OutwardModsCommunicator.EventBus
         /// </summary>
         public static void LogModSubscribers(string modNamespace)
         {
+            #if DEBUG
+            OMC.Log($"EventBusDataPresenter@LogModSubscribers for '{modNamespace}' called!");
+            #endif
             var modSubscribers = EventBus.GetModSubscribers();
 
             if (!modSubscribers.TryGetValue(modNamespace, out var modEvents))
@@ -163,6 +169,9 @@ namespace OutwardModsCommunicator.EventBus
                 return;
             }
 
+            #if DEBUG
+            OMC.Log($"found mod '{modNamespace}' subscribers");
+            #endif
             LogModEventSubscribers(modNamespace, modEvents);
         }
 

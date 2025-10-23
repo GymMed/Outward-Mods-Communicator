@@ -94,6 +94,10 @@ namespace OutwardModsCommunicator.EventBus
             if (!modEvents.TryGetValue(eventName, out var handlers))
                 modEvents[eventName] = handlers = new List<Action<EventPayload?>>();
 
+
+            #if DEBUG
+            OMC.Log($"Subscribed to event '{eventName}' from '{modNamespace}'");
+            #endif
             handlers.Add(callback);
         }
 
@@ -102,6 +106,9 @@ namespace OutwardModsCommunicator.EventBus
         /// </summary>
         public static void Unsubscribe(string modNamespace, string eventName, Action<EventPayload?> callback)
         {
+            #if DEBUG
+            OMC.Log($"Unsubscribed to event '{eventName}' from '{modNamespace}'");
+            #endif
             if (_modSubscribers.TryGetValue(modNamespace, out var modEvents) &&
                 modEvents.TryGetValue(eventName, out var handlers))
             {
