@@ -29,6 +29,51 @@ Users don’t need to download configuration files from third-party sources.
 Configurations can be edited through XML, and the control flow follows this order: User -> Mod -> Cfg Documents<br>
 
 <details>
+    <summary>Deeper explanation</summary>
+Currently, Outward's BepInEx does not provide a built-in way for mods to modify 
+<code>.cfg</code> configuration files inside the <code>BepInEx/config</code> directory.  
+Mods Communicator solves this by using two XML files. One XML file is placed in the 
+mod’s plugin directory (recommended), and Mods Communicator uses it to override 
+configuration settings right after the <code>ResourcesPrefabManager</code> class 
+finishes its <code>Load</code> method.  
+Afterwards, it reads the player’s <code>PlayerModsOverrides.xml</code> file, located 
+inside this mod’s folder, to apply personal overrides based on the player’s preferences.  
+
+<h3>FAQ</h3>
+
+<details>
+    <summary>Why use XML instead of hardcoding values in the assembly/code/DLL?</summary>
+    XML is used so players can freely edit values without needing to modify any code.  
+    The XML structure is simple, human-readable, and gives full control to the user.
+</details>
+
+<details>
+    <summary>Why are there two XML files?</summary>
+    Mods can be updated frequently, and each update may include new default XML values.  
+    By separating the player’s personal overrides into a second XML file, updates won’t 
+    overwrite their custom settings.  
+    Mods Communicator only provides a <code>PlayerModsOverrides.example.xml</code> file — 
+    players must rename it to <code>PlayerModsOverrides.xml</code>.  
+    This makes their configuration safe from updates and re-downloads.
+</details>
+
+<details>
+    <summary>Why are XML files read after the <code>ResourcesPrefabManager.Load</code> method?</summary>
+    Because all plugins and their configurations must be initialized first.  
+    Once <code>ResourcesPrefabManager.Load</code> completes, all 
+    <code>.cfg</code> files are loaded, and it becomes safe to apply overrides.
+</details>
+
+<details>
+    <summary>Does every mod that changes settings through configs need Mods Communicator as a dependency?</summary>
+    No. The Mods Communicator library is only required for mods that want to modify 
+    other mods’ default values to create new experiences.  
+    For example, the <code>Outward Game Settings</code> mod uses this dependency 
+    solely for the <code>EventBus</code> feature to publish additional events.
+</details>
+</details>
+
+<details>
     <summary>Changing Configuration As User</summary>
     This library includes <code>PlayerModsOverrides.example.xml</code> file. You will need
     to change it's name to <code>PlayerModsOverrides.xml</code> when you can open it to add
