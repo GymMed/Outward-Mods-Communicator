@@ -11,6 +11,9 @@ namespace OutwardModsCommunicator.EventBus
         // fieldName -> Type
         public Dictionary<string, Type> Fields { get; } = new Dictionary<string, Type>();
 
+        // Field name -> Description (optional)
+        public Dictionary<string, string> Descriptions { get; } = new Dictionary<string, string>();
+
         public EventSchema() { }
 
         // Build schema from an EventPayload where values are Types (or from runtime payload types)
@@ -30,6 +33,16 @@ namespace OutwardModsCommunicator.EventBus
             }
         }
 
-        public void AddField(string name, Type type) => Fields[name] = type;
+        public void AddField(string name, Type type, string? description = null)
+        {
+            Fields[name] = type;
+            if (!string.IsNullOrWhiteSpace(description))
+                Descriptions[name] = description!;
+        }
+
+        public string? GetDescription(string field)
+        {
+            return Descriptions.TryGetValue(field, out var desc) ? desc : null;
+        }
     }
 }

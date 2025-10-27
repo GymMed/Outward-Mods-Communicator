@@ -75,6 +75,17 @@ namespace OutwardModsCommunicator.EventBus
         }
 
         /// <summary>
+        /// Register event convenience using array of (key, type, description)
+        /// </summary>
+        public static void RegisterEvent(string modNamespace, string eventName, params (string key, Type type, string? description)[] fields)
+        {
+            var schema = new EventSchema();
+            foreach (var (k, t, d) in fields)
+                schema.AddField(k, t, d);
+            RegisterEvent(modNamespace, eventName, schema);
+        }
+
+        /// <summary>
         /// Another convenience: register from an EventPayload where values are Types (payload contains Type objects)
         /// </summary>
         public static void RegisterEventFromPayloadTypes(string modNamespace, string eventName, EventPayload payloadWithTypes)

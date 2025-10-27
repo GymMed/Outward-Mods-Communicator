@@ -62,7 +62,14 @@ namespace OutwardModsCommunicator.EventBus
                 {
                     string fieldName = field.Key;
                     string typeName = field.Value?.Name ?? "null";
+
                     OMC.Log($"    Parameter {fieldName} : Type {typeName}");
+
+                    if (schema.Descriptions.TryGetValue(fieldName, out string? description) &&
+                        !string.IsNullOrWhiteSpace(description))
+                    {
+                        OMC.Log($"    Description of parameter {fieldName}: {description}");
+                    }
                 }
             }
 
