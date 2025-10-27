@@ -231,6 +231,9 @@ void Awake()
     // "EnchantmentMenu@TryEnchant" is the event name
     // ("menu", typeof(EnchantmentMenu)) defines your variable name and its type
     EventBus.RegisterEvent(GUID,  "EnchantmentMenu@TryEnchant", ("menu", typeof(EnchantmentMenu)));
+
+    // add optional description about parameter(is variable optional?)
+    //EventBus.RegisterEvent(GUID,  "EnchantmentMenu@TryEnchant", ("menu", typeof(EnchantmentMenu), "The enchantment menu instance that invoked the TryEnchant method."));
     // you can add multiple variables and
     // add as many as you need like this:
     //EventBus.RegisterEvent("MyPluginId",  "MyClass@MyMethod", ("name", typeof(string)), ("health", typeof(int)));
