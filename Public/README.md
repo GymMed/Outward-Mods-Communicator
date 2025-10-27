@@ -231,7 +231,6 @@ void Awake()
     // "EnchantmentMenu@TryEnchant" is the event name
     // ("menu", typeof(EnchantmentMenu)) defines your variable name and its type
     EventBus.RegisterEvent(GUID,  "EnchantmentMenu@TryEnchant", ("menu", typeof(EnchantmentMenu)));
-
     // add optional description about parameter(is variable optional?)
     //EventBus.RegisterEvent(GUID,  "EnchantmentMenu@TryEnchant", ("menu", typeof(EnchantmentMenu), "The enchantment menu instance that invoked the TryEnchant method."));
     // you can add multiple variables and
@@ -305,7 +304,6 @@ public class ResourcesPrefabManager_Load
     {
         // Log all registered events
         EventBusDataPresenter.LogRegisteredEvents();
-
         // Log all subsribers
         EventBusDataPresenter.LogAllModsSubsribers();
     }
