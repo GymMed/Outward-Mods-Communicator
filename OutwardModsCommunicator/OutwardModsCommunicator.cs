@@ -25,7 +25,7 @@ namespace OutwardModsCommunicator
 
         public const string NAME = "Outward Mods Communicator";
 
-        public const string VERSION = "1.0.1";
+        public const string VERSION = "1.0.2";
 
         public static string xmlFilePath { get; set; } = "";
 
@@ -80,7 +80,7 @@ namespace OutwardModsCommunicator
                 if (!string.IsNullOrEmpty(OMC.xmlFilePath))
                     ConfigOverrideManager.OverrideConfigsFromFile(OMC.xmlFilePath);
 
-                string playerOverridesLocation = Path.Combine(GetProjectLocation(), "PlayerModsOverrides.xml");
+                string playerOverridesLocation = PathsManager.GetPlayerOverrideLocation();
                 if (!string.IsNullOrEmpty(playerOverridesLocation))
                     ConfigOverrideManager.OverrideConfigsFromFile(playerOverridesLocation);
             }

@@ -6,6 +6,7 @@ Outward Mods Communicator enables seamless communication between mods through sh
 
 You can view mod creation [template here](https://github.com/GymMed/Outward-Mod-Pack-Template).
 You can view [outward game settings mod here](https://github.com/GymMed/Outward-Game-Settings).
+You can view more complex example [outward loot manager mod here](https://github.com/GymMed/Outward-Loot-Manager).
 
 ## How to set up for game
 

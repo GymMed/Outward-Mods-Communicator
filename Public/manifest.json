@@ -1,6 +1,6 @@
 {
 	"name": "Mods_Communicator",
-	"version_number": "1.0.1",
+	"version_number": "1.0.2",
 	"website_url": "https://github.com/GymMed/Outward-Mods-Communicator",
 	"description": "Outward Mods Communicator enables seamless communication between mods through shared events and configuration syncing. It also lets users override any changes made by other mods, giving them full control over their settings.",
 	"dependencies": [

@@ -37,7 +37,7 @@ mod’s plugin directory (recommended), and Mods Communicator uses it to overrid
 configuration settings right after the <code>ResourcesPrefabManager</code> class 
 finishes its <code>Load</code> method.  
 Afterwards, it reads the player’s <code>PlayerModsOverrides.xml</code> file, located 
-inside this mod’s folder, to apply personal overrides based on the player’s preferences.  
+in <code>BepInEx/config/gymmed.Mods_Communicator</code> folder, to apply personal overrides based on the player’s preferences.  
 
 <h3>FAQ</h3>
 
@@ -52,8 +52,8 @@ inside this mod’s folder, to apply personal overrides based on the player’s 
     Mods can be updated frequently, and each update may include new default XML values.  
     By separating the player’s personal overrides into a second XML file, updates won’t 
     overwrite their custom settings.  
-    Mods Communicator only provides a <code>PlayerModsOverrides.example.xml</code> file — 
-    players must rename it to <code>PlayerModsOverrides.xml</code>.  
+    Mods Communicator only provides a <code>BepInEx/config/gymmed.Mods_Communicator/PlayerModsOverrides.example.xml</code> file — 
+    players must rename it to <code>BepInEx/config/gymmed.Mods_Communicator/PlayerModsOverrides.xml</code>.  
     This makes their configuration safe from updates and re-downloads.
 </details>
 
@@ -75,10 +75,10 @@ inside this mod’s folder, to apply personal overrides based on the player’s 
 
 <details>
     <summary>Changing Configuration As User</summary>
-    This library includes <code>PlayerModsOverrides.example.xml</code> file. You will need
-    to change it's name to <code>PlayerModsOverrides.xml</code> when you can open it to add
-    or modify XML values.
-</details>
+This library includes <code>PlayerModsOverrides.example.xml</code> file
+inside your <code>BepInEx/config/gymmed.Mods_Communicator</code> folder.
+You will need to change it's name to <code>PlayerModsOverrides.xml</code>
+when you can open it to add or modify XML values. </details>
 
 <details>
     <summary>Adding Configuration Path To Mod</summary>
@@ -88,7 +88,7 @@ inside this mod’s folder, to apply personal overrides based on the player’s 
 
 <details>
     <summary>Editing XML</summary>
-    This library will contain `PlayerModsOverrides.xml` document as an example.
+    This library will contain <code>BepInEx/config/gymmed.Mods_Communicator/PlayerModsOverrides.example.xml</code> document as an example.
     Each override is added inside a ConfigOverrides element:
   <pre><code>&lt;ConfigOverrides&gt;
   &lt;Mod GUID="gymmed.outward_game_settings"&gt;
@@ -107,7 +107,7 @@ inside this mod’s folder, to apply personal overrides based on the player’s 
 &lt;/ConfigOverrides&gt;</code></pre>
 
 <details>
-    <summary>Possible mod override information can be found in `BepInEx/config` directory inside `.cfg` documents</summary>
+    <summary>Possible mod override information can be found in <code>BepInEx/config</code> directory inside <code>.cfg</code> documents</summary>
 <pre><code>## Settings file was created by plugin Outward Game Settings v0.0.1<br>
 ## Plugin GUID: gymmed.outward_game_settings<br>
 
@@ -145,6 +145,82 @@ PlayAudioOnEnchantingDone = true<br></code></pre>
 Communication is handled through an Event Bus — a system that allows mods to fire (publish) and listen (subscribe) to shared events.
 
 <details>
+  <summary>Deeper Explanation</summary>
+  <p> Outward&#x2019;s BepInEx framework uses <b>Harmony</b> for patching &#x2014; allowing mods to modify or extend existing game logic. However, Harmony alone cannot handle <b>communication between mods</b>. That&#x2019;s where the <b>Event Bus</b> comes in. </p>
+  <p> Harmony and the Event Bus serve <b>different purposes</b>: </p>
+  <details>
+    <summary>Harmony &#x2014; Modify Existing Behavior</summary>
+    <p>
+  Harmony is a patching library that injects code before, after, or inside existing game methods.
+  It&#x2019;s great for changing how things work but not for sharing data between mods.
+</p>
+    <ul>
+      <li>
+        <b>Pros:</b>
+      </li>
+      <ul>
+        <li>Perfect for tweaking existing systems (combat, AI, loot, etc.).</li>
+        <li>Gives direct control over the game&#x2019;s original methods.</li>
+      </ul>
+      <li>
+        <b>Cons:</b>
+      </li>
+      <ul>
+        <li>Can only modify what already exists.</li>
+        <li>Requires DLL references to patch another mod&#x2019;s code.</li>
+        <li>Breaks easily when mods or the game update.</li>
+        <li>Cannot define new, reusable communication points for others.</li>
+      </ul>
+    </ul>
+    <p>
+      <i>Harmony changes how things behave &#x2014; not how mods talk to each other.</i>
+    </p>
+  </details>
+  <details>
+    <summary>Event Bus &#x2014; Enable Mod Communication</summary>
+    <p>
+  The Event Bus allows mods to <b>publish and subscribe</b> to events without referencing each
+  other&#x2019;s DLLs. It introduces a safe, modular way for mods to share information and react to
+  in-game events.
+</p>
+    <ul>
+      <li>
+        <b>Advantages:</b>
+      </li>
+      <ul>
+        <li>No fragile DLL dependencies or version mismatches.</li>
+        <li>Mods stay modular &#x2014; one mod can publish, others can listen.</li>
+        <li>Supports entirely new custom events that didn&#x2019;t exist before.</li>
+      </ul>
+    </ul>
+    <p><b>Example:</b>
+  A <a href="https://github.com/GymMed/Outward-Game-Settings">Game Settings mod</a> can publish an <code>OnEnchantSuccess</code> event.  
+  Another mod can listen for it and play new sounds, change visuals,
+  or trigger additional effects when enchantments succeed.
+</p>
+  </details>
+  <h3>FAQ</h3>
+  <details>
+    <summary>Can&#x2019;t I just patch another mod&#x2019;s method?</summary>
+    <p> You can &#x2014; but it&#x2019;s fragile. You&#x2019;ll need to include that mod&#x2019;s DLL as a dependency, and any update to it can break your patch. The <b>Mods Communicator</b> Event Bus avoids this problem &#x2014; mods only publish and subscribe to shared events, keeping them safe and compatible. </p>
+  </details>
+  <details>
+    <summary>Can I create libraries with Mods Communicator?</summary>
+    <p> Yes. You can create lightweight library mods that listen for published events and transform complex logic into simpler, abstracted event calls. Example: The <a href="https://github.com/GymMed/Outward-Loot-Manager">Loot Manager</a> listens for death events and injects new loot. </p>
+  </details>
+  <details>
+    <summary>How does this help implement new features?</summary>
+    <p> The <a href="https://github.com/GymMed/Outward-Game-Settings">Game Settings Mod</a> adds enchantment success chance and exposes success/failure events. Other mods can subscribe to these to: </p>
+    <ul>
+      <li>Disable default enchantment sounds.</li>
+      <li>Play new audio clips or effects.</li>
+      <li>Trigger visual cues or animations on success or failure.</li>
+    </ul>
+  </details>
+  <p><b>Summary:</b> Harmony modifies existing game behavior. Event Bus enables safe, modular mod communication. Together, they make Outward&#x2019;s modding ecosystem more powerful and extensible. </p>
+</details>
+
+<details>
     <summary>How to register event?</summary>
 <pre><code class="language-csharp">using OutwardModsCommunicator.EventBus;
 ...
@@ -170,10 +246,11 @@ Use this in places where you want to allow other mods to extend your functionali
 void YourMethod()
 {
     ...
-    // Add variable types and names
+    // Add variable receiver names and your variables references
     var payload = new EventPayload
     {
-        ["EnchantmentMenu"] = menu,
+        // Will get it as named menu
+        ["menu"] = yourVariable,
     };
     // Send event for subscribers to receive data
     EventBus.Publish(OutwardGameSettings.GUID,  "EnchantmentMenu@TryEnchant", payload);
@@ -202,6 +279,8 @@ private static void OnTryEnchant(EventPayload payload)
     if (menu == null)
     {
         Log.LogMessage("Mod gymmed.outward_game_settings event EnchantmentMenu@TryEnchant returned null for EnchantmentMenu");
+        // log received payload for errors inspection
+        EventBusDataPresenter.LogPayload(payload);
         return;
     }
     // Lets log success
@@ -223,6 +302,9 @@ public class ResourcesPrefabManager_Load
     {
         // Log all registered events
         EventBusDataPresenter.LogRegisteredEvents();
+
+        // Log all subsribers
+        EventBusDataPresenter.LogAllModsSubsribers();
     }
 }</code></pre>
 </details>
@@ -232,8 +314,9 @@ The project also includes extra tools like `EventProfiler` and `EventBusDataPres
 
 ## Can I find basic example how to use this?
 
-You can view mod creation [template here](https://github.com/GymMed/Outward-Mod-Pack-Template).</br>
-You can view [outward game settings mod here](https://github.com/GymMed/Outward-Game-Settings).
+You can view mod creation [template here](https://github.com/GymMed/Outward-Mod-Pack-Template).<br>
+You can view [outward game settings mod here](https://github.com/GymMed/Outward-Game-Settings).<br>
+You can view more complex example [outward loot manager mod here](https://github.com/GymMed/Outward-Loot-Manager).
 
 ## How to set up
 
