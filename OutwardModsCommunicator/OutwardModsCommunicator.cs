@@ -25,7 +25,7 @@ namespace OutwardModsCommunicator
 
         public const string NAME = "Outward Mods Communicator";
 
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "1.2.0";
 
         public static string xmlFilePath { get; set; } = "";
 

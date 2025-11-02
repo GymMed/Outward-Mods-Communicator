@@ -31,7 +31,7 @@ namespace OutwardModsCommunicator.EventBus
 
             if (!regs.TryGetValue(modNamespace, out var modEvents))
             {
-                OMC.Log($"No registered events found for mod '{modNamespace}'");
+                logForMod(modNamespace, $"No registered events found for mod '{modNamespace}'");
                 return;
             }
 
@@ -41,20 +41,29 @@ namespace OutwardModsCommunicator.EventBus
         /// <summary>
         /// Internal reusable function for logging registered events of one mod.
         /// </summary>
-        private static void LogRegisteredEventsForModInternal(string modNamespace, Dictionary<string, EventSchema> modEvents)
+        private static void LogRegisteredEventsForModInternal(string modNamespace, Dictionary<string, EventDefinition> modEvents)
         {
-            OMC.Log($"==== EventBus Registered Events for Mod '{modNamespace}' ====");
+            logForMod(modNamespace, $"==== EventBus Registered Events for Mod '{modNamespace}' ====");
 
             foreach (var evtPair in modEvents)
             {
                 string eventName = evtPair.Key;
-                EventSchema schema = evtPair.Value;
+                EventDefinition eventDefinition = evtPair.Value;
+                EventSchema schema = eventDefinition.Schema;
 
-                OMC.Log($"  Event '{eventName}' fields:");
+                logEmptyEventLine(modNamespace, eventName);
+
+                if (!string.IsNullOrEmpty(eventDefinition.Description))
+                {
+                    logForEvent(modNamespace, eventName, $"  Event '{eventName}' Description:'{eventDefinition.Description}'");
+                }
+
+                logForEvent(modNamespace, eventName, $"  Event '{eventName}' fields:");
 
                 if (schema.Fields.Count == 0)
                 {
-                    OMC.Log("    (no fields declared)");
+                    logForEvent(modNamespace, eventName, "    (no fields declared)");
+                    logEmptyEventLine(modNamespace, eventName);
                     continue;
                 }
 
@@ -63,17 +72,18 @@ namespace OutwardModsCommunicator.EventBus
                     string fieldName = field.Key;
                     string typeName = field.Value?.Name ?? "null";
 
-                    OMC.Log($"    Parameter {fieldName} : Type {typeName}");
+                    logForEvent(modNamespace, eventName, $"    Parameter {fieldName} : Type {typeName}");
 
                     if (schema.Descriptions.TryGetValue(fieldName, out string? description) &&
                         !string.IsNullOrWhiteSpace(description))
                     {
-                        OMC.Log($"    Description of parameter {fieldName}: {description}");
+                        logForEvent(modNamespace, eventName, $"    Description of parameter {fieldName}: {description}");
                     }
+                    logEmptyEventLine(modNamespace, eventName);
                 }
             }
 
-            OMC.Log($"==== End of Registered Events for Mod '{modNamespace}' ====");
+            logForMod(modNamespace, $"==== End of Registered Events for Mod '{modNamespace}' ====");
         }
 
         /// <summary>
@@ -100,7 +110,7 @@ namespace OutwardModsCommunicator.EventBus
 
             if (!published.TryGetValue(modNamespace, out var modEvents))
             {
-                OMC.Log($"No published events found for mod '{modNamespace}'");
+                logForMod(modNamespace, $"No published events found for mod '{modNamespace}'");
                 return;
             }
 
@@ -112,30 +122,30 @@ namespace OutwardModsCommunicator.EventBus
         /// </summary>
         public static void LogPublishersEvents(string modNamespace, Dictionary<string, EventPayload>modEvents)
         {
-            OMC.Log($"==== EventBus Publishers for Mod '{modNamespace}' ====");
+            logForMod(modNamespace, $"==== EventBus Publishers for Mod '{modNamespace}' ====");
 
             foreach (var evtPair in modEvents)
             {
-                LogPublishersEventsVariables(evtPair.Key, evtPair.Value);
+                LogPublishersEventsVariables(modNamespace, evtPair.Key, evtPair.Value);
             }
 
-            OMC.Log($"==== End of Publishers for Mod '{modNamespace}' ====");
+            logForMod(modNamespace, $"==== End of Publishers for Mod '{modNamespace}' ====");
         }
 
         /// <summary>
         /// Log specific mod publisher event variables as a single huge data block.
         /// </summary>
-        public static void LogPublishersEventsVariables(string eventName, EventPayload payload)
+        public static void LogPublishersEventsVariables(string modName, string eventName, EventPayload payload)
         {
 
-            OMC.Log($"  Event '{eventName}' publishes keys:");
+            logForEvent(modName, eventName, $"  Event '{eventName}' publishes keys:");
 
             foreach (var kv in payload)
             {
                 string keyName = kv.Key;
                 string typeName = kv.Value?.GetType().Name ?? "null";
                 string valueStr = kv.Value?.ToString() ?? "null";
-                OMC.Log($"    {keyName} : {typeName} | Value={valueStr}");
+                logForEvent(modName, eventName, $"    {keyName} : {typeName} | Value={valueStr}");
             }
         }
 
@@ -172,7 +182,7 @@ namespace OutwardModsCommunicator.EventBus
 
             if (!modSubscribers.TryGetValue(modNamespace, out var modEvents))
             {
-                OMC.Log($"No subscribers found for mod '{modNamespace}'");
+                logForMod(modNamespace, $"No subscribers found for mod '{modNamespace}'");
                 return;
             }
 
@@ -187,23 +197,29 @@ namespace OutwardModsCommunicator.EventBus
         /// </summary>
         private static void LogModEventSubscribers(string modNamespace, Dictionary<string, List<Action<EventPayload?>>> modEvents)
         {
-            OMC.Log($"==== EventBus Data: Mod '{modNamespace}' ====");
+            logForMod(modNamespace, $"==== EventBus Data: Mod '{modNamespace}' ====");
             foreach (var evtPair in modEvents)
             {
                 string eventName = evtPair.Key;
                 var handlers = evtPair.Value;
 
-                OMC.Log($"Event: '{eventName}' | Subscriber Count: {handlers.Count}");
+                logEmptyEventLine(modNamespace, eventName);
+                logForEvent(modNamespace, eventName, $"Event: '{eventName}' | Subscriber Count: {handlers.Count}");
 
                 int idx = 0;
                 foreach (var handler in handlers)
                 {
-                    string methodName = handler.Method.Name;
+                    var method = handler.Method;
+                    var declaringType = method.DeclaringType;
+                    string typeName = declaringType?.FullName ?? "UnknownType";
+                    string assemblyName = declaringType?.Assembly.GetName().Name ?? "UnknownAssembly";
                     string targetType = handler.Target?.GetType().Name ?? "static";
-                    OMC.Log($"  Subscriber {++idx}: TargetType={targetType}, Method={methodName}");
+                    logForEvent(modNamespace, eventName, $"  Subscriber {++idx}: Assembly={assemblyName}, DeclaringType={typeName}, TargetType={targetType}, Method={method.Name}");
                 }
+
+                logEmptyEventLine(modNamespace, eventName);
             }
-            OMC.Log($"==== End of Mod '{modNamespace}' ====");
+            logForMod(modNamespace, $"==== End of Mod '{modNamespace}' ====");
         }
 
         /// <summary>Logs all subscriber namespaces and their events.</summary>
@@ -212,6 +228,7 @@ namespace OutwardModsCommunicator.EventBus
             var modSubscribers = EventBus.GetModSubscribers();
 
             OMC.Log("==== EventBus: All Subscribers ====");
+            logEmptyLine();
             foreach (var modPair in modSubscribers)
             {
                 string mod = modPair.Key;
@@ -222,6 +239,7 @@ namespace OutwardModsCommunicator.EventBus
                     OMC.Log($"Mod: {mod} | Event: {evt} | Subscribers: {count}");
                 }
             }
+            logEmptyLine();
             OMC.Log("==== End of Subscribers ====");
         }
 
@@ -232,17 +250,18 @@ namespace OutwardModsCommunicator.EventBus
 
             if (!modSubscribers.TryGetValue(modNamespace, out var modEvents))
             {
-                OMC.Log($"Mod '{modNamespace}' not found.");
+                logForMod(modNamespace,  $"Mod '{modNamespace}' not found.");
                 return;
             }
 
             if (!modEvents.TryGetValue(eventName, out var handlers))
             {
-                OMC.Log($"Event '{eventName}' not found in mod '{modNamespace}'.");
+                logForEvent(modNamespace, eventName, $"Event '{eventName}' not found in mod '{modNamespace}'.");
                 return;
             }
 
-            OMC.Log($"==== EventBus: Subscribers for '{modNamespace}.{eventName}' ====");
+            logForEvent(modNamespace, eventName, $"==== EventBus: Subscribers for '{modNamespace}.{eventName}' ====");
+            logEmptyEventLine(modNamespace, eventName);
             int idx = 0;
             foreach (var handler in handlers)
             {
@@ -250,7 +269,8 @@ namespace OutwardModsCommunicator.EventBus
                 string targetType = handler.Target?.GetType().Name ?? "static";
                 OMC.Log($"Subscriber {++idx}: TargetType={targetType}, Method={methodName}");
             }
-            OMC.Log("==== End of Event Subscribers ====");
+            logEmptyEventLine(modNamespace, eventName);
+            logForEvent(modNamespace, eventName, "==== End of Event Subscribers ====");
         }
 
         /// <summary>Logs the contents of a payload with key names and value types.</summary>
@@ -271,6 +291,31 @@ namespace OutwardModsCommunicator.EventBus
                 OMC.Log($"Key='{key}' | Type={typeName} | Value={valueStr}");
             }
             OMC.Log("--------------------------");
+        }
+
+        private static void logForMod(string modName, string message)
+        {
+            OMC.Log($"[{modName}] {message}");
+        }
+
+        private static void logForEvent(string modName, string eventName, string message)
+        {
+            OMC.Log($"[{modName}] [{eventName}] {message}");
+        }
+
+        private static void logEmptyModLine(string modName)
+        {
+            logForMod(modName, "");
+        }
+
+        private static void logEmptyEventLine(string modName, string eventName)
+        {
+            logForEvent(modName, eventName, "");
+        }
+
+        private static void logEmptyLine()
+        {
+            OMC.Log("");
         }
     }
 }

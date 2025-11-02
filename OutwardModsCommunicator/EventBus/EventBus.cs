@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OutwardModsCommunicator.Enums;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace OutwardModsCommunicator.EventBus
     /// </summary>
     public static class EventBus
     {
+        private static string _logPrefix = "[EventBus]";
+
         // Dictionary<modNamespace, Dictionary<eventName, List<callbacks>>>
         private static readonly Dictionary<string, Dictionary<string, List<Action<EventPayload?>>>> _modSubscribers = new();
 
@@ -32,14 +35,19 @@ namespace OutwardModsCommunicator.EventBus
         }
 
         // Registered events metadata: Dictionary<modNamespace, Dictionary<eventName, EventSchema>>
-        private static readonly Dictionary<string, Dictionary<string, EventSchema>> _registeredEvents
-            = new Dictionary<string, Dictionary<string, EventSchema>>();
+        private static readonly Dictionary<string, Dictionary<string, EventDefinition>> _registeredEvents
+            = new Dictionary<string, Dictionary<string, EventDefinition>>();
 
 
         // Accessor (read-only view) for presenters
-        public static IReadOnlyDictionary<string, Dictionary<string, EventSchema>> GetRegisteredEvents()
+        public static IReadOnlyDictionary<string, Dictionary<string, EventDefinition>> GetRegisteredEvents()
         {
             return _registeredEvents;
+        }
+
+        private static void Log(string message, ENUM_LOG_LEVELS logLevel = ENUM_LOG_LEVELS.Info)
+        {
+            OMC.Log($"{_logPrefix} {message}", logLevel);
         }
 
         /// <summary>
@@ -51,9 +59,9 @@ namespace OutwardModsCommunicator.EventBus
         public static void RegisterEvent(string modNamespace, string eventName, EventSchema? schema = null)
         {
             if (!_registeredEvents.TryGetValue(modNamespace, out var modEvents))
-                _registeredEvents[modNamespace] = modEvents = new Dictionary<string, EventSchema>();
+                _registeredEvents[modNamespace] = modEvents = new Dictionary<string, EventDefinition>();
 
-            modEvents[eventName] = schema ?? new EventSchema();
+            modEvents[eventName] = new EventDefinition(schema ?? new EventSchema());
 
             // ensure published slots exist (optional convenience)
             if (!_publishedPayloads.TryGetValue(modNamespace, out var modPublished))
@@ -61,7 +69,30 @@ namespace OutwardModsCommunicator.EventBus
             if (!modPublished.ContainsKey(eventName))
                 modPublished[eventName] = new EventPayload();
 
-            OMC.Log($"[EventBus] Registered event '{modNamespace}.{eventName}'");
+            Log($"Registered event '{modNamespace}.{eventName}'");
+        }
+
+        /// <summary>
+        /// Register with explicit schema object and optional description
+        /// </summary>
+        /// <param name="modNamespace"></param>
+        /// <param name="eventName"></param>
+        /// <param name="description"></param>
+        /// <param name="schema"></param>
+        public static void RegisterEvent(string modNamespace, string eventName, string description, EventSchema? schema = null)
+        {
+            if (!_registeredEvents.TryGetValue(modNamespace, out var modEvents))
+                _registeredEvents[modNamespace] = modEvents = new Dictionary<string, EventDefinition>();
+
+            modEvents[eventName] = new EventDefinition(schema ?? new EventSchema(), description);
+
+            // ensure published slots exist (optional convenience)
+            if (!_publishedPayloads.TryGetValue(modNamespace, out var modPublished))
+                _publishedPayloads[modNamespace] = modPublished = new Dictionary<string, EventPayload>();
+            if (!modPublished.ContainsKey(eventName))
+                modPublished[eventName] = new EventPayload();
+
+            Log($"Registered event '{modNamespace}.{eventName}'");
         }
 
         /// <summary>
@@ -75,6 +106,16 @@ namespace OutwardModsCommunicator.EventBus
         }
 
         /// <summary>
+        /// Register event convenience using array of (key, type) and event description
+        /// </summary>
+        public static void RegisterEvent(string modNamespace, string eventName, string eventDescription, params (string key, Type type)[] fields)
+        {
+            var schema = new EventSchema();
+            foreach (var (k, t) in fields) schema.AddField(k, t);
+            RegisterEvent(modNamespace, eventName, eventDescription, schema);
+        }
+
+        /// <summary>
         /// Register event convenience using array of (key, type, description)
         /// </summary>
         public static void RegisterEvent(string modNamespace, string eventName, params (string key, Type type, string? description)[] fields)
@@ -83,6 +124,17 @@ namespace OutwardModsCommunicator.EventBus
             foreach (var (k, t, d) in fields)
                 schema.AddField(k, t, d);
             RegisterEvent(modNamespace, eventName, schema);
+        }
+
+        /// <summary>
+        /// Register event convenience using array of (key, type, description) and event description
+        /// </summary>
+        public static void RegisterEvent(string modNamespace, string eventName, string eventDescription, params (string key, Type type, string? description)[] fields)
+        {
+            var schema = new EventSchema();
+            foreach (var (k, t, d) in fields)
+                schema.AddField(k, t, d);
+            RegisterEvent(modNamespace, eventName, eventDescription, schema);
         }
 
         /// <summary>
@@ -159,7 +211,7 @@ namespace OutwardModsCommunicator.EventBus
                 }
                 catch (Exception ex)
                 {
-                    OMC.Log($"[EventBus] Error in '{modNamespace}.{eventName}' subscriber: {ex}", Enums.ENUM_LOG_LEVELS.Error);
+                    Log($"Error in '{modNamespace}.{eventName}' subscriber: {ex}", Enums.ENUM_LOG_LEVELS.Error);
                 }
 
                 if (OMC.EnableEventsProfiler.Value && subSw != null)

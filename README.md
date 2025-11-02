@@ -212,7 +212,7 @@ Communication is handled through an Event Bus — a system that allows mods to f
     <summary>How does this help implement new features?</summary>
     <p> The <a href="https://github.com/GymMed/Outward-Game-Settings">Game Settings Mod</a> adds enchantment success chance and exposes success/failure events. Other mods can subscribe to these to: </p>
     <ul>
-      <li>Disable default enchantment sounds.</li>
+      <li>Disable default enchantment sounds.(Through config synchronization)</li>
       <li>Play new audio clips or effects.</li>
       <li>Trigger visual cues or animations on success or failure.</li>
     </ul>
@@ -231,6 +231,8 @@ void Awake()
     // "EnchantmentMenu@TryEnchant" is the event name
     // ("menu", typeof(EnchantmentMenu)) defines your variable name and its type
     EventBus.RegisterEvent(GUID,  "EnchantmentMenu@TryEnchant", ("menu", typeof(EnchantmentMenu)));
+    // add optional event description
+    // EventBus.RegisterEvent(GUID,  "EnchantmentMenu@TryEnchant", "Event fired before calculating enchantment success/failure.", ("menu", typeof(EnchantmentMenu)));
     // add optional description about parameter(is variable optional?)
     //EventBus.RegisterEvent(GUID,  "EnchantmentMenu@TryEnchant", ("menu", typeof(EnchantmentMenu), "The enchantment menu instance that invoked the TryEnchant method."));
     // you can add multiple variables and
@@ -317,6 +319,7 @@ The project also includes extra tools like `EventProfiler` and `EventBusDataPres
 
 You can view mod creation [template here](https://github.com/GymMed/Outward-Mod-Pack-Template).<br>
 You can view [outward game settings mod here](https://github.com/GymMed/Outward-Game-Settings).<br>
+You can view [outward scene tester mod here](https://github.com/GymMed/Outward-Scene-Tester).<br>
 You can view more complex example [outward loot manager mod here](https://github.com/GymMed/Outward-Loot-Manager).
 
 ## How to set up

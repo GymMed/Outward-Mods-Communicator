@@ -11,10 +11,10 @@
     <DebugType>portable</DebugType>
     <OutputPath>..\Release\</OutputPath>
 	
-	  <Version>1.1.0</Version>
-	  <AssemblyVersion>1.1.0.0</AssemblyVersion>
-	  <FileVersion>1.1.0.0</FileVersion>
-	  <InformationalVersion>1.1.0</InformationalVersion>
+	  <Version>1.1.1-alpha6</Version>
+	  <AssemblyVersion>1.1.1.0</AssemblyVersion>
+	  <FileVersion>1.1.1.0</FileVersion>
+	  <InformationalVersion>1.1.1</InformationalVersion>
 
     <PackageId>Outward.ModsCommunicator</PackageId>
     <Authors>GymMed</Authors>

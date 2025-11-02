@@ -1,11 +1,30 @@
 ## Changelog
 
+### Release 1.2.0 Version
+
+#### Added
+
+-   Added support for optional event description when registering events.
+Example: 
+<br><code>EventBus.RegisterEvent(
+    GUID,
+    "yourEvent",
+    "your event description",
+    ("yourVariableRetrievalKey", typeof(string), "Your variable description.")
+);</code>
+
+#### Fixed
+
+-   Fixed readme code blocks.
+-   Changed how `EventBusDataPresenter` shows logs. Now it is much clearer.
+
 ### Release 1.1.0 Version
 
 #### Added
 
 -   Added support for optional parameter descriptions when registering events.
-Example: <code>EventBus.RegisterEvent(
+Example: 
+<br><code>EventBus.RegisterEvent(
     GUID,
     "EnchantmentMenu@TryEnchant",
     ("menu", typeof(EnchantmentMenu), "The enchantment menu instance that invoked the TryEnchant method.")
